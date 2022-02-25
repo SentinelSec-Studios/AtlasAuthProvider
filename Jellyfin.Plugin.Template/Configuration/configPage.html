@@ -5,72 +5,66 @@
     <title>Template</title>
 </head>
 <body>
-    <div id="TemplateConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
+    <div id="AtlasAuthenticationProviderConfigPage" data-role="page" class="page type-interior pluginConfigurationPage">
         <div data-role="content">
             <div class="content-primary">
-                <form id="TemplateConfigForm">
-                    <div class="selectContainer">
-                        <label class="selectLabel" for="Options">Several Options</label>
-                        <select is="emby-select" id="Options" name="Options" class="emby-select-withcolor emby-select">
-                            <option id="optOneOption" value="OneOption">One Option</option>
-                            <option id="optAnotherOption" value="AnotherOption">Another Option</option>
-                        </select>
-                    </div>
-                    <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="AnInteger">An Integer</label>
-                        <input id="AnInteger" name="AnInteger" type="number" is="emby-input" min="0" />
-                        <div class="fieldDescription">A Description</div>
-                    </div>
-                    <div class="checkboxContainer checkboxContainer-withDescription">
-                        <label class="emby-checkbox-label">
-                            <input id="TrueFalseSetting" name="TrueFalseCheckBox" type="checkbox" is="emby-checkbox" />
-                            <span>A Checkbox</span>
-                        </label>
-                    </div>
-                    <div class="inputContainer">
-                        <label class="inputeLabel inputLabelUnfocused" for="AString">A String</label>
-                        <input id="AString" name="AString" type="text" is="emby-input" />
-                        <div class="fieldDescription">Another Description</div>
-                    </div>
-                    <div>
-                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
-                            <span>Save</span>
-                        </button>
+                <form>
+                    <div class="verticalSection verticalSection-extrabottompadding">
+                        <div class="sectionTitleContainer flex align-items-center">
+                            <h2 class="sectionTitle">AtlasAuthenticationProvider settings:</h2>
+                            <a is="emby-button" class="raised button-alt headerHelpButton" target="_blank"
+                               href="#">${Help}</a>
+                        </div>
+                        <div class="inputContainer">
+                            <label for="txtConnectionString">AuthProvider URI:</label>
+                            <input type="text" id="txtConnectionURI" required="required" is="emby-input" />
+                            <div class="fieldDescription">
+                                SentinelSec Development: AtlasAuthenticationProvider Version 0.0.1
+                            </div>
+                        </div>
+                        <br />
+                        <div>
+                            <button is="emby-button" type="submit" data-theme="b" class="raised button-submit block">
+                                <span>Save</span>
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
         <script type="text/javascript">
-            var TemplateConfig = {
-                pluginUniqueId: 'eb5d7894-8eef-4b36-aa6f-5d124e828ce1'
+            var AtlasAuthenticationProviderConfig = {
+                uniquePluginId: "28c4d3f7-0b3d-48d1-8de2-87d7fe7ac06a",
+
+                loadConfiguration: function () {
+                    Dashboard.showLoadingMsg();
+
+                    window.ApiClient.getPluginConfiguration(AtlasAuthenticationProviderConfig.uniquePluginId).then(function (config) {
+                        document.getElementById('txtConnectionURI').value = config.ConnectionURI || '';
+                        Dashboard.hideLoadingMsg();
+                    });
+                },
+
+                saveConfiguration: function () {
+                    Dashboard.showLoadingMsg();
+
+                    window.ApiClient.getPluginConfiguration(AtlasAuthenticationProviderConfig.uniquePluginId).then(function (config) {
+                        config.ConnectionURI = document.getElementById('txtConnectionURI').value;
+
+                        window.ApiClient.updatePluginConfiguration(AtlasAuthenticationProviderConfig.uniquePluginId, config).then(function (result) {
+                            Dashboard.processPluginConfigurationUpdateResult(result);
+                        });
+                    });
+                },
             };
 
-            document.querySelector('#TemplateConfigPage')
-                .addEventListener('pageshow', function() {
-                    Dashboard.showLoadingMsg();
-                    ApiClient.getPluginConfiguration(TemplateConfig.pluginUniqueId).then(function (config) {
-                        document.querySelector('#Options').value = config.Options;
-                        document.querySelector('#AnInteger').value = config.AnInteger;
-                        document.querySelector('#TrueFalseSetting').checked = config.TrueFalseSetting;
-                        document.querySelector('#AString').value = config.AString;
-                        Dashboard.hideLoadingMsg();
-                    });    
-                });
-            
-            document.querySelector('#TemplateConfigForm')
-                .addEventListener('submit', function() {
-                Dashboard.showLoadingMsg();
-                ApiClient.getPluginConfiguration(TemplateConfig.pluginUniqueId).then(function (config) {
-                    config.Options = document.querySelector('#Options').value;
-                    config.AnInteger = document.querySelector('#AnInteger').value;
-                    config.TrueFalseSetting = document.querySelector('#TrueFalseSetting').checked;
-                    config.AString = document.querySelector('#AString').value;
-                    ApiClient.updatePluginConfiguration(TemplateConfig.pluginUniqueId, config).then(function (result) {
-                        Dashboard.processPluginConfigurationUpdateResult(result);
-                    });
-                });
+            document.getElementById('AtlasAuthenticationProviderConfigPage').addEventListener('pageshow', function () {
+                AtlasAuthenticationProviderConfig.loadConfiguration();
+            });
 
-                return false;
+            document.getElementById('AtlasAuthenticationProviderConfigPage').addEventListener('submit', function (e) {
+                e.preventDefault();
+                AtlasAuthenticationProviderConfig.saveConfiguration();
             });
         </script>
     </div>

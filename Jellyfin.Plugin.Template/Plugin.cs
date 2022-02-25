@@ -1,51 +1,60 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Jellyfin.Plugin.Template.Configuration;
+using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Jellyfin.Plugin.AtlasAuthenticationProvider;
+using Jellyfin.Plugin.AtlasAuthenticationProvider.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
 
-namespace Jellyfin.Plugin.Template;
-
-/// <summary>
-/// The main plugin.
-/// </summary>
-public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
+namespace Jellyfin.Plugin.AtlasAuthenticationProvider
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="Plugin"/> class.
+    /// The base class of the plugin.
     /// </summary>
-    /// <param name="applicationPaths">Instance of the <see cref="IApplicationPaths"/> interface.</param>
-    /// <param name="xmlSerializer">Instance of the <see cref="IXmlSerializer"/> interface.</param>
-    public Plugin(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer)
-        : base(applicationPaths, xmlSerializer)
+    public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     {
-        Instance = this;
-    }
-
-    /// <inheritdoc />
-    public override string Name => "Template";
-
-    /// <inheritdoc />
-    public override Guid Id => Guid.Parse("eb5d7894-8eef-4b36-aa6f-5d124e828ce1");
-
-    /// <summary>
-    /// Gets the current plugin instance.
-    /// </summary>
-    public static Plugin? Instance { get; private set; }
-
-    /// <inheritdoc />
-    public IEnumerable<PluginPageInfo> GetPages()
-    {
-        return new[]
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Plugin"/> class.
+        /// </summary>
+        /// <param name="applicationPaths">Instance of the <see cref="IApplicationPaths"/> interface.</param>
+        /// <param name="xmlSerializer">Instance of the <see cref="IXmlSerializer"/> interface.</param>
+        public Plugin(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer) : base(applicationPaths, xmlSerializer)
         {
-            new PluginPageInfo
+            Instance = this;
+        }
+
+        /// <summary>
+        /// Gets the name of the plugin.
+        /// </summary>
+        public override string Name => "AtlasAuthenticationProvider";
+
+        /// <summary>
+        /// Gets the Guid of the plugin.
+        /// </summary>
+        public override Guid Id => Guid.Parse("28c4d3f7-0b3d-48d1-8de2-87d7fe7ac06a");
+
+        /// <summary>
+        /// Gets the current plugin instance.
+        /// </summary>
+        public static Plugin? Instance { get; private set; }
+
+        /// <inheritdoc />
+        public IEnumerable<PluginPageInfo> GetPages()
+        {
+            return new[]
             {
-                Name = this.Name,
-                EmbeddedResourcePath = string.Format(CultureInfo.InvariantCulture, "{0}.Configuration.configPage.html", GetType().Namespace)
-            }
-        };
+                new PluginPageInfo
+                {
+                    Name = Name,
+                    EmbeddedResourcePath = $"{GetType().Namespace}.Configuration.configPage.html"
+                }
+            };
+        }
     }
 }
